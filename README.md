@@ -17,7 +17,7 @@ Welcome to SShifted, a multi-tabbed text editor based on Ace and PyQt6. This app
 ## Screen Shot
 
 <div align="center">
-  <img src="https://github.com/scottpeterman/sshifted/raw/main/screen_shots/toolbox.png" alt="UglyPTY Dark" width="400px"> 
+  <img src="https://raw.githubusercontent.com/scottpeterman/sshifted/main/screen-shots/welcome.png" alt="UglyPTY Dark" width="400px"> 
 </div>
 
 ## Installation

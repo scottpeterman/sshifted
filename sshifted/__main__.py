@@ -25,6 +25,7 @@ class AboutDialog(QDialog):
         text_browser.setHtml("""
         <h1>SShifted, a Multi-Tabbed Editor</h1>
         <p>Version: 0.1.0</p>
+        <br><a href = "https://github.com/scottpeterman/sshifted">https://github.com/scottpeterman/sshifted</a>
         <p>This application is a multi-tabbed text editor based on Ace and PyQt6</p>
         <p>For more information about Ace, visit the <a href="https://ace.c9.io/">Ace official website</a>.
         <p>For more information about PyQt Bindings for Qt, visit the <a href="https://www.riverbankcomputing.com/">Riverbank Computing</a>.
@@ -34,6 +35,7 @@ class AboutDialog(QDialog):
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
         """)
+        text_browser.setOpenExternalLinks(True)
         layout.addWidget(text_browser)
         close_button = QPushButton("Close", self)
         close_button.clicked.connect(self.close)

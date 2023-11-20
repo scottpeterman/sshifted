@@ -50,7 +50,7 @@ SShifted Text Editor is free software under the GNU General Public License v3. F
 
 ## Support
 
-For more information about SShifted, visit our [GitHub repository](#) or our [support page](#).
+For more information about SShifted, visit our repo [https://github.com/scottpeterman/sshifted](#)
 
 ## Acknowledgments
 

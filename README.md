@@ -1,7 +1,3 @@
-Based on the provided code for your "SShifted Text Editor," here's a sample end-user README that you can use or modify as needed:
-
----
-
 # SShifted Text Editor
 
 Welcome to SShifted, a multi-tabbed text editor based on Ace and PyQt6. This application offers a rich text editing experience with multiple tabs, enabling you to work on various files simultaneously. 

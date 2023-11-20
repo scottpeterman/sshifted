@@ -1,1 +1,61 @@
-# sshifted
+Based on the provided code for your "SShifted Text Editor," here's a sample end-user README that you can use or modify as needed:
+
+---
+
+# SShifted Text Editor
+
+Welcome to SShifted, a multi-tabbed text editor based on Ace and PyQt6. This application offers a rich text editing experience with multiple tabs, enabling you to work on various files simultaneously. 
+
+## Features
+
+- **Multi-Tab Interface**: Easily manage multiple documents in tabs.
+- **Ace Editor Integration**: Enjoy a full-featured code editor.
+- **PyQt6 WebEngine**: Modern and powerful web rendering for an enhanced experience.
+- **Customizable Settings**: Tailor the editor to your preferences.
+- **Cross-Platform**: Runs on any platform that supports Python and PyQt6.
+
+## Screen Shot
+
+<div align="center">
+  <img src="https://github.com/scottpeterman/sshifted/raw/main/screen_shots/toolbox.png" alt="UglyPTY Dark" width="400px"> 
+</div>
+
+## Installation
+
+Before installing SShifted, ensure you have Python installed on your system. Then, you can install SShifted via pip:
+
+```bash
+pip install sshifted
+```
+
+## Getting Started
+
+After installation, you can start the SShifted Text Editor from your command line. On windows you can use pythonw so you don't have to keep a cmd window open, or use it in a shortcut on your desktop, and you wont ever see a cmd window:
+
+```bash
+python -m  sshifted
+pythonw -m sshifted
+```
+
+## Usage
+
+- **Opening Files**: Use the 'File' menu to open new or existing files.
+- **Saving Files**: Save your work using the 'Save' or 'Save As' options.
+- **Settings**: Customize your experience through the 'Settings' menu.
+- **Shortcuts**: Utilize common keyboard shortcuts like 'Ctrl+N' for a new file, 'Ctrl+S' for save etc.
+
+## About
+
+SShifted Text Editor is free software under the GNU General Public License v3. For more details, refer to the 'About' section in the application.
+
+## Support
+
+For more information about SShifted, visit our [GitHub repository](#) or our [support page](#).
+
+## Acknowledgments
+
+SShifted uses the Ace editor. For more about Ace, visit [Ace official website](https://ace.c9.io/).
+Learn more about PyQt and Qt at [Riverbank Computing](https://www.riverbankcomputing.com/) and [Qt Group](https://www.qt.io/), respectively.
+
+---
+

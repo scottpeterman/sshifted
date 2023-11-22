@@ -54,9 +54,6 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
             # Handle the content change for this editor
             self.has_changed = True
 
-
-
-
     def contextMenuEvent(self, event: QContextMenuEvent) -> None:
         # Create a custom context menu
         context_menu = QtWidgets.QMenu(self)
@@ -248,4 +245,7 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
         msg.setStandardButtons(QMessageBox.StandardButton.Ok)
         retval = msg.exec()
 
+    def changeEditorTheme(self, theme_name):
+        js_code = f"changeEditorTheme('{theme_name}');"
+        self.page().runJavaScript(js_code)
 

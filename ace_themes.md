@@ -15,8 +15,6 @@ Here is a list of some commonly used Ace Editor themes:
    - `ace/theme/textmate`
    - `ace/theme/tomorrow`
    - `ace/theme/xcode`
-
-2. **Dark Themes**:
    - `ace/theme/ambiance`
    - `ace/theme/chaos`
    - `ace/theme/clouds_midnight`

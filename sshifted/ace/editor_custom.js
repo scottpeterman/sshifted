@@ -1,7 +1,7 @@
 var editor = ace.edit("editor");
 function initializeEditor(editorId) {
 
-    editor.setTheme("ace/theme/twilight");
+    editor.setTheme("ace/theme/textmate");
     editor.session.setMode("ace/mode/python");
 
     // Handle paste command
@@ -64,9 +64,11 @@ function resetContentChangedFlag(editorId) {
     }
 }
 
-//function selectAll() {
-//var editor = ace.edit("editor");
-//console.log(editor)
-//editor.selectAll();
-//}
+function changeEditorTheme(themeName) {
+//alert("got here");
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/" + themeName);
+}
+
+
 

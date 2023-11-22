@@ -3,12 +3,12 @@ import sys
 
 import yaml
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import QUrl, QTimer
 from PyQt6.QtGui import QShortcut, QKeySequence, QPalette
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import QMainWindow, QTabWidget, QMessageBox, QVBoxLayout, QTextBrowser, QPushButton, QDialog, \
     QStyleFactory
-from EditorMenuSystem import EditorMenuSystem
+from sshifted.EditorMenuSystem import EditorMenu as EditorMenuSystem
 from Library.editor import Editor
 from settings_dialog import SettingsDialog
 
@@ -75,7 +75,20 @@ class MainApplication(QMainWindow):
         self.menuSystem.saveFileAsRequested.connect(self.saveFileAs)
         self.menuSystem.settingsRequested.connect(self.openSettingsDialog)
         self.menuSystem.aboutRequested.connect(self.openAboutDialog)
+        self.menuSystem.uiThemeChanged.connect(self.changeUITheme)
+        self.menuSystem.aceThemeChanged.connect(self.changeAceEditorTheme)
 
+    def changeUITheme(self, theme_name):
+        new_style = QStyleFactory.create(theme_name)
+        if self.parent_app is not None:
+            self.parent_app.setStyle(new_style)
+            new_palette = QPalette(new_style.standardPalette())
+            self.parent_app.setPalette(new_palette)
+
+    def changeAceEditorTheme(self, theme_name):
+        current_editor = self.getCurrentEditor()
+        if isinstance(current_editor, Editor):
+            current_editor.changeEditorTheme(theme_name)
 
     def openSettingsDialog(self):
         dialog = SettingsDialog(self.settings, self)
@@ -90,6 +103,8 @@ class MainApplication(QMainWindow):
             self.parent_app.setStyle(new_style)
             new_palette = QPalette(new_style.standardPalette())
             self.parent_app.setPalette(new_palette)
+
+
 
     def openAboutDialog(self):
         # Implement the logic to open the about dialog
@@ -136,6 +151,9 @@ class MainApplication(QMainWindow):
             else:
                 tab.new_file = True
 
+
+            # Use a default value if not set
+            # tab.changeEditorTheme(f"ace/theme/{editor_theme}")
             tab_title = os.path.basename(file_path) if file_path else "New File"
             index = self.tabs.addTab(tab, tab_title)
             # Make the tab closable
@@ -163,6 +181,10 @@ class MainApplication(QMainWindow):
             index = self.tabs.addTab(tab, tab_title)
             self.tabs.setCurrentIndex(index)
             self.updateStatusBar(index)
+            editor_theme = self.settings.get('editor_theme', 'monokai')
+            tab.changeEditorTheme(editor_theme)
+            QTimer.singleShot(1000, lambda: tab.changeEditorTheme(editor_theme))
+
 
 
     def updateTabTitle(self, file_path):
@@ -243,6 +265,14 @@ def main():
 
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle(settings['application_style'])
+    app.setStyleSheet("""
+   
+QMenu::icon {
+    margin: 0px;
+    padding: 0px;
+    width: 0px; /* Hide the icon by setting the width to 0 */
+}
+    """)
 
     main_window = MainApplication(settings)
     main_window.show()
@@ -250,4 +280,5 @@ def main():
     sys.exit(app.exec())
 
 if __name__ == "__main__":
+    print(f"Debug webengine here: http://127.0.0.1:9222/")
     main()

@@ -3,14 +3,14 @@ import sys
 
 import yaml
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QUrl, QTimer
+from PyQt6.QtCore import QUrl, QTimer, QEvent
 from PyQt6.QtGui import QShortcut, QKeySequence, QPalette
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import QMainWindow, QTabWidget, QMessageBox, QVBoxLayout, QTextBrowser, QPushButton, QDialog, \
     QStyleFactory
 from sshifted.EditorMenuSystem import EditorMenu as EditorMenuSystem
-from Library.editor import Editor
-from settings_dialog import SettingsDialog
+from sshifted.Library.editor import Editor
+from sshifted.settings_dialog import SettingsDialog
 
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
@@ -151,13 +151,14 @@ class MainApplication(QMainWindow):
             else:
                 tab.new_file = True
 
-
             # Use a default value if not set
-            # tab.changeEditorTheme(f"ace/theme/{editor_theme}")
+
             tab_title = os.path.basename(file_path) if file_path else "New File"
             index = self.tabs.addTab(tab, tab_title)
             # Make the tab closable
-
+            editor_theme = self.settings.get('editor_theme', 'monokai')
+            tab.changeEditorTheme(editor_theme)
+            QTimer.singleShot(1000, lambda: tab.changeEditorTheme(editor_theme))
             self.tabs.setCurrentIndex(index)  # Activate the new tab
             self.updateStatusBar(index)
         elif tab_type == "welcome":
@@ -185,7 +186,22 @@ class MainApplication(QMainWindow):
             tab.changeEditorTheme(editor_theme)
             QTimer.singleShot(1000, lambda: tab.changeEditorTheme(editor_theme))
 
+    def closeEvent(self, event: QEvent):
+        # Check if there are any tabs other than the welcome tab
+        open_editor_tabs = any(isinstance(self.tabs.widget(i), Editor) for i in range(self.tabs.count()))
 
+        if open_editor_tabs:
+            # Prompt the user to confirm they want to close
+            reply = QMessageBox.question(self, 'Exit', 'You have open tabs. Are you sure you want to exit without saving?',
+                                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                         QMessageBox.StandardButton.No)
+
+            if reply == QMessageBox.StandardButton.Yes:
+                event.accept()  # The user confirmed they want to close
+            else:
+                event.ignore()  # The user chose not to close
+        else:
+            event.accept()  # No editor tabs open, so close without prompting
 
     def updateTabTitle(self, file_path):
         current_tab = self.tabs.currentWidget()

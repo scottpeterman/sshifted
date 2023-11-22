@@ -5,15 +5,15 @@ Welcome to SShifted, a multi-tabbed text editor based on Ace and PyQt6. This app
 ## Features
 
 - **Multi-Tab Interface**: Easily manage multiple documents in tabs.
-- **Ace Editor Integration**: Enjoy a full-featured code editor.
-- **PyQt6 WebEngine**: Modern and powerful web rendering for an enhanced experience.
-- **Customizable Settings**: Tailor the editor to your preferences.
+- **Ace Editor Integration**: Enjoy a full-featured code editor, with Ace light and dark themes.
 - **Cross-Platform**: Runs on any platform that supports Python and PyQt6.
 
 ## Screen Shot
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/scottpeterman/sshifted/main/screen-shots/welcome.png" alt="UglyPTY Dark" width="400px"> 
+  <hr>
+<img src="https://raw.githubusercontent.com/scottpeterman/sshifted/main/screen-shots/light.png" alt="UglyPTY Dark" width="400px">
 </div>
 
 ## Installation

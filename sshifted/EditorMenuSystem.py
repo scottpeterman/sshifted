@@ -1,3 +1,4 @@
+from PyQt6 import QtCore
 from PyQt6.QtCore import pyqtSignal, QObject
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QFileDialog, QStyleFactory
@@ -13,6 +14,7 @@ class EditorMenu(QObject):
     uiThemeChanged = pyqtSignal(str)
     aceThemeChanged = pyqtSignal(str)
 
+    keyboardShortcutsRequested = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -47,7 +49,13 @@ class EditorMenu(QObject):
 
         # Add Help Menu
         help_menu = menu_bar.addMenu("&Help")
+        # Inside your EditorMenuSystem or similar class
+        keyboardShortcutsAction = help_menu.addAction("Keyboard Shortcuts")
+        keyboardShortcutsAction.triggered.connect(self.keyboardShortcutsRequested.emit)
+
         self.addMenuAction(help_menu, "&About", self.about)
+
+
 
     def addThemeMenuAction(self, menu, theme_name, signal):
         action = QAction(theme_name, self)

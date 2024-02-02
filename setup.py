@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="sshifted",
-    version="0.2.0",
+    version="0.3.0",
     description="A PyQt6 multi-tabbed editor based on Ace.js",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",

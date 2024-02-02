@@ -14,6 +14,8 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
 
     def __init__(self, parent, doc_text=None):
         super().__init__(parent)
+        self.free_editor_ids = set()
+        self.used_editor_ids = set()
         self.channel = QWebChannel()
         self.handler = Handler(self)
         self.channel.registerObject('handler', self.handler)
@@ -24,7 +26,7 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
         self.new_file = False
         self.file_path = None
         self.editorId = Editor.nextEditorId
-        Editor.nextEditorId += 1
+        Editor.nextEditorId = self.generate_unique_editor_id()
         self.has_changed = False
         self.is_initial_load = True  # Add this flag
 
@@ -40,9 +42,13 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
         self.loadFinished.connect(self.initializeEditor)
         self.handler.contentChangedSignal.connect(self.onContentChanged)
 
-
-
-
+    def generate_unique_editor_id(self):
+        if self.free_editor_ids:
+            return self.free_editor_ids.pop()
+        else:
+            new_id = len(self.used_editor_ids) + 1
+            self.used_editor_ids.add(new_id)
+            return new_id
 
     def initializeEditor(self, ok):
         if ok:

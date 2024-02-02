@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import QMainWindow, QTabWidget, QMessageBox, QVBoxLayout, Q
 from sshifted.EditorMenuSystem import EditorMenu as EditorMenuSystem
 from sshifted.Library.editor import Editor
 from sshifted.settings_dialog import SettingsDialog
+from sshifted.KeyboardShortcutsDialog import KeyboardShortcutsDialog
 
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
@@ -25,7 +26,6 @@ class AboutDialog(QDialog):
         text_browser = QTextBrowser(self)
         text_browser.setHtml("""
         <h1>SShifted, a Multi-Tabbed Editor</h1>
-        <p>Version: 0.1.0</p>
         <br><a href = "https://github.com/scottpeterman/sshifted">https://github.com/scottpeterman/sshifted</a>
         <p>This application is a multi-tabbed text editor based on Ace and PyQt6</p>
         <p>For more information about Ace, visit the <a href="https://ace.c9.io/">Ace official website</a>.
@@ -46,6 +46,8 @@ class MainApplication(QMainWindow):
     def __init__(self, settings):
         super().__init__()
         self.editors = {}
+        self.editor_counter = 0
+
         self.settings = settings
         self.setWindowTitle("SShifted Text Editor")
         self.resize(800, 600)
@@ -79,7 +81,14 @@ class MainApplication(QMainWindow):
         self.menuSystem.aboutRequested.connect(self.openAboutDialog)
         self.menuSystem.uiThemeChanged.connect(self.changeUITheme)
         self.menuSystem.aceThemeChanged.connect(self.changeAceEditorTheme)
+        self.menuSystem.keyboardShortcutsRequested.connect(self.openKeyboardShortcutsDialog)
 
+    def generate_unique_editor_id(self):
+        self.editor_counter += 1
+        return self.editor_counter
+    def openKeyboardShortcutsDialog(self):
+        dialog = KeyboardShortcutsDialog(self)
+        dialog.exec()
     def changeUITheme(self, theme_name):
         new_style = QStyleFactory.create(theme_name)
         if self.parent_app is not None:
@@ -138,13 +147,19 @@ class MainApplication(QMainWindow):
 
 
     def addTab(self, file_path=None, tab_type="new"):
+        editor_id = self.generate_unique_editor_id()
+
         if tab_type == "existing" and file_path:
-            if file_path and any(tab.file_path == file_path for tab in self.editors.values()):
-                QMessageBox.warning(self, "File Already Open",
-                                    f"The file '{os.path.basename(file_path)}' is already open.",
-                                    QMessageBox.StandardButton.Ok)
-                return
+            is_file_already_open = False  # Start with the assumption that the file is not open
+            for index in range(self.tabs.count()):
+                editor = self.tabs.widget(index)
+                if isinstance(editor, Editor) and editor.file_path == file_path:
+                    print(f"File {file_path} is already open in another tab.")
+                    self.tabs.setCurrentIndex(index)  # Switch to the tab where the file is already open
+                    return  # Don't create a new tab, exit the function
+
             tab = Editor(self)
+            tab.editorId = editor_id
             self.editors[tab.editorId] = tab
             tab.fileSaved.connect(self.updateTabTitle)
             if file_path:
@@ -251,7 +266,11 @@ class MainApplication(QMainWindow):
                     editor.requestSaveAs()  # Prompt 'Save As' if it's a new file
             elif reply == QMessageBox.StandardButton.Cancel:
                 return  # Cancel closing the tab
-
+        try:
+            del self.editors[index]
+        except Exception as e:
+            # failes when closing splash screen as its not an editor
+            pass
         self.tabs.removeTab(index)
 
     def saveFileAs(self):

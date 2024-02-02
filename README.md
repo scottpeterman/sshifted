@@ -54,4 +54,7 @@ SShifted uses the Ace editor. For more about Ace, visit [Ace official website](h
 Learn more about PyQt and Qt at [Riverbank Computing](https://www.riverbankcomputing.com/) and [Qt Group](https://www.qt.io/), respectively.
 
 ---
-
+#### Install build dependendancies
+`pip install wheel setuptools`
+#### Run Build
+`python setup.py sdist bdist_wheel`

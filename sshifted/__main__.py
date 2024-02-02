@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -52,6 +53,7 @@ class MainApplication(QMainWindow):
         self.initializeMenuSystem()
         self.initializeShortcuts()
         self.parent_app = None
+        self.loadSession()
 
     def initializeUI(self):
         self.tabs = QTabWidget()
@@ -187,21 +189,46 @@ class MainApplication(QMainWindow):
             QTimer.singleShot(1000, lambda: tab.changeEditorTheme(editor_theme))
 
     def closeEvent(self, event: QEvent):
-        # Check if there are any tabs other than the welcome tab
-        open_editor_tabs = any(isinstance(self.tabs.widget(i), Editor) for i in range(self.tabs.count()))
-
-        if open_editor_tabs:
-            # Prompt the user to confirm they want to close
-            reply = QMessageBox.question(self, 'Exit', 'You have open tabs. Are you sure you want to exit without saving?',
-                                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                                         QMessageBox.StandardButton.No)
-
-            if reply == QMessageBox.StandardButton.Yes:
-                event.accept()  # The user confirmed they want to close
-            else:
-                event.ignore()  # The user chose not to close
+        if self.promptSaveOnClose():
+            self.saveSession()
+            event.accept()  # The user confirmed they want to close
         else:
-            event.accept()  # No editor tabs open, so close without prompting
+            event.ignore()  # The user chose not to close
+
+    def loadSession(self):
+        try:
+            with open('session.json', 'r') as session_file:
+                session_data = json.load(session_file)
+                for file_path in session_data.get('open_files', []):
+                    if os.path.exists(file_path):
+                        self.addTab(file_path=file_path, tab_type="existing")
+                    else:
+                        print(f"File {file_path} was not found. It may have been moved or deleted.")
+        except (FileNotFoundError, json.JSONDecodeError):
+            print("No previous session found or session file is corrupted.")
+
+    def promptSaveOnClose(self):
+        for i in range(self.tabs.count()):
+            editor = self.tabs.widget(i)
+            if isinstance(editor, Editor) and editor.has_changed:
+                reply = QMessageBox.question(self, "Save File",
+                                             f"The file {os.path.basename(editor.file_path)} has unsaved changes. Do you want to save before closing?",
+                                             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel)
+                if reply == QMessageBox.StandardButton.Yes:
+                    editor.requestSave()
+                elif reply == QMessageBox.StandardButton.Cancel:
+                    return False  # Cancel closing the application
+        return True
+
+    def saveSession(self):
+        open_files = []
+        for i in range(self.tabs.count()):
+            tab = self.tabs.widget(i)
+            if isinstance(tab, Editor) and tab.file_path and not tab.has_changed:
+                open_files.append(tab.file_path)
+        session_data = {'open_files': open_files}
+        with open('session.json', 'w') as session_file:
+            json.dump(session_data, session_file)
 
     def updateTabTitle(self, file_path):
         current_tab = self.tabs.currentWidget()
@@ -297,4 +324,5 @@ QMenu::icon {
 
 if __name__ == "__main__":
     print(f"Debug webengine here: http://127.0.0.1:9222/")
+    # --webEngineArgs --remote-debugging-port=9222 --remote-allow-origins=http://127.0.0.1:9222
     main()

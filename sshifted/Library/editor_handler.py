@@ -36,7 +36,7 @@ class Handler(QObject):
 
     @pyqtSlot(int)
     def contentChanged(self, editor_id):
-        # print(f"Content has changed in the editor {editor_id}.")
+        print(f"PyQt6: Content has changed in the editor {editor_id}.")
         self.contentChangedSignal.emit(editor_id)  # Emit the signal with editor ID
 
 

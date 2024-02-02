@@ -26,6 +26,7 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
         self.editorId = Editor.nextEditorId
         Editor.nextEditorId += 1
         self.has_changed = False
+        self.is_initial_load = True  # Add this flag
 
         # Load the HTML file for the editor
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -40,6 +41,9 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
         self.handler.contentChangedSignal.connect(self.onContentChanged)
 
 
+
+
+
     def initializeEditor(self, ok):
         if ok:
             # Enable developer tools
@@ -50,8 +54,13 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
             self.page().runJavaScript(f"initializeEditor({self.editorId});")
 
     def onContentChanged(self, editor_id):
+        if self.is_initial_load:
+            # Ignore changes during initial load
+            self.is_initial_load = False
+            return
         if editor_id == self.editorId:
             # Handle the content change for this editor
+            print(f"onContentChanged: Change Detected Editor id: {editor_id}")
             self.has_changed = True
 
     def contextMenuEvent(self, event: QContextMenuEvent) -> None:
@@ -102,17 +111,23 @@ class Editor(QtWebEngineWidgets.QWebEngineView):
         self.file_path = file_path
         self.action = "load"
         self.parent_window.file_to_open = file_path
+        self.is_initial_load = True  # Set the flag to True when starting to load a file
+
         with open(file_path, 'r') as file:
             content = file.read()
             print(content)
             self.doc_text = content
             QTimer.singleShot(500, self.loadContent)  # Delay for 500 ms
 
+
     def loadContent(self):
         self.page().runJavaScript(f"editor.setValue(``);")
         self.page().runJavaScript("replaceSelectionWithDecodedBase64", self.processJavaScriptResult)
         self.page().runJavaScript(f"contentChanged = false;;")
+        QTimer.singleShot(100, self.resetInitialLoadFlag)  # Short delay before resetting the flag
 
+    def resetInitialLoadFlag(self):
+        self.is_initial_load = False  # Reset the flag after content has been loaded
 
     def requestSave(self):
         self.action = "save"
